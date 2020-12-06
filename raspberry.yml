@@ -1,0 +1,22 @@
+--- # Install Raspberry Pi specific tweaks
+- hosts: rpis 
+  become: true
+
+  tasks:
+  - name: Install aptitude using apt
+    apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
+
+  - name: Check if swap enabled
+    shell: swapon --show | wc -l
+    register: swap_enabled
+
+  - name: Disable swap
+    shell: "{{ item }}"
+    with_items: 
+      - dphys-swapfile swapoff
+      - dphys-swapfile uninstall
+      - update-rc.d dphys-swapfile disable
+    when: swap_enabled.stdout != "0"
+
+  - name: Uninstall swap
+    apt: name=dphys-swapfile state=absent purge=yes autoremove=yes

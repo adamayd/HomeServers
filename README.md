@@ -18,6 +18,10 @@
 
 ## Initial Setup
 
+`touch ssh` on boot partition to enable ssh on `boot`
+
+rename the host in `etc/hostname` (NOTE: no forward slash) in the `rootfs` partition if you want a different hostname at boot.
+
 ### Creating Users
 
 On the ansible client, create an ansible user without a password (this prevents ssh authentication to the ansible control node). This may not work on desktop linux if users are required to have a password for the account to be enabled.
@@ -54,3 +58,17 @@ Use `ssh-copy-id` to copy the `.pub` file to the Raspberry Pi
 ```
 ssh-copy-id -i <PATH_TO_KEY_FILES>.pub <USER>@<HOSTNAME_OR_IP>
 ```
+
+### Run Docker Playbook
+
+
+### Remove Stress on SD Card
+
+remove swap
+
+`sudo dphys-swapfile swapoff`
+`sudo dphys-swapfile uninstall`
+`sudo apt purge dphys-swapfile`
+
+log2ram
+

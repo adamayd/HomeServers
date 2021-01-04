@@ -20,3 +20,22 @@
 
   - name: Uninstall swap
     apt: name=dphys-swapfile state=absent purge=yes autoremove=yes
+
+  - name: Clone Log2RAM repo
+    git: repo=https://github.com/azlux/log2ram.git clone=yes dest=/home/ansible/log2ram
+
+  - name: Check if Log2RAM enabled
+    shell: df -h | grep log2ram | wc -l
+    register: log2ram_enabled
+
+  - name: Set Log2RAM Install Script to Executable
+    file: path=/home/ansible/log2ram/install.sh mode=0755
+    when: log2ram_enabled.stdout == "0"
+
+  - name: Execute Log2RAM Install Script
+    command: sh /home/ansible/log2ram/install.sh
+    when: log2ram_enabled.stdout == "0"
+
+  - name: Reboot to enable changes
+    reboot: 
+    when: log2ram_enabled.stdout == "0"

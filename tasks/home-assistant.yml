@@ -1,0 +1,25 @@
+--- # Install Home Assistant
+- hosts: decnet 
+  become: true
+
+  tasks:
+  - name: Create Home Assistant Directory
+    ansible.builtin.file:
+      path: "{{ config_dir }}/hass.io"
+      state: directory
+      mode: 0755
+    become: false
+
+  - name: Copy Home Assistant Docker Compose File
+    ansible.builtin.template:
+      src: templates/home-assistant.yml
+      dest: "{{ config_dir }}/hass.io/docker-compose.yml"
+      mode: '0640'
+    become: false
+    notify: Restart pi-hole
+
+  - name: Ensure Home Assistant is Running
+    community.docker.docker_compose:
+      project_src: "{{ config_dir }}/hass.io/"
+      build: false
+    become: false
